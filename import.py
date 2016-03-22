@@ -124,7 +124,7 @@ class StringStore:
 		self.fh = open(file, 'wb+')
 	def write(self, id, text, flags = 1):
 		if len(text) > 255:
-			progress('warning: trimming %s bytes long text: 0x%s' % (len(text), text.encode('hex')))
+			progress('warning: trimming {0!s} bytes long text: 0x{1!s}'.format(len(text), text.encode('hex')))
 			text = text[0:255].decode(ENCODING, 'ignore').encode(ENCODING)
 		data = self.struct.pack(len(text), flags, text)
 		self.fh.seek(id * self.struct.size)
@@ -200,7 +200,7 @@ class Revision:
 		if self.comment:
 			self.meta['comm'].write(self.id, self.comment.encode(ENCODING))
 		mydata = self.text.encode(ENCODING)
-		out('blob\nmark :%d\ndata %d\n' % (self.id + 1, len(mydata)))
+		out('blob\nmark :{0:d}\ndata {1:d}\n'.format(self.id + 1, len(mydata)))
 		out(mydata + '\n')
 
 class Page:
@@ -432,7 +432,7 @@ class Committer:
 				continue
 			page = self.meta['page'].read(meta['page'])
 			comm = self.meta['comm'].read(meta['rev'])
-			namespace = asciiize('%d-%s' % (page['flags'], self.meta['meta'].idtons[page['flags']]))
+			namespace = asciiize('{0:d}-{1!s}'.format(page['flags'], self.meta['meta'].idtons[page['flags']]))
 			title = page['text']
 			subdirtitle = ''
 			for i in range(0, min(self.meta['options'].DEEPNESS, len(title))):
@@ -443,11 +443,11 @@ class Committer:
 				minor = ' (minor)'
 			else:
 				minor = ''
-			msg = comm['text'] + '\n\nLevitation import of page %d rev %d%s.\n' % (meta['page'], meta['rev'], minor)
+			msg = comm['text'] + '\n\nLevitation import of page {0:d} rev {1:d}{2!s}.\n'.format(meta['page'], meta['rev'], minor)
 			if commit == 1:
 				fromline = ''
 			else:
-				fromline = 'from :%d\n' % (commit - 1)
+				fromline = 'from :{0:d}\n'.format((commit - 1))
 			if day != meta['day']:
 				day = meta['day']
 				progress('   ' + day)
@@ -471,12 +471,12 @@ class Committer:
 				offset = tzoffsetorzero()
 			out(
 				'commit refs/heads/master\n' +
-				'mark :%d\n' % commit +
-				'author %s <%s@git.%s> %d +0000\n' % (author, authoruid, self.meta['meta'].domain, meta['epoch']) +
-				'committer %s %d %s\n' % (self.meta['options'].COMMITTER, committime, offset) +
-				'data %d\n%s\n' % (len(msg), msg) +
+				'mark :{0:d}\n'.format(commit) +
+				'author {0!s} <{1!s}@git.{2!s}> {3:d} +0000\n'.format(author, authoruid, self.meta['meta'].domain, meta['epoch']) +
+				'committer {0!s} {1:d} {2!s}\n'.format(self.meta['options'].COMMITTER, committime, offset) +
+				'data {0:d}\n{1!s}\n'.format(len(msg), msg) +
 				fromline +
-				'M 100644 :%d %s\n' % (meta['rev'] + 1, filename)
+				'M 100644 :{0:d} {1!s}\n'.format(meta['rev'] + 1, filename)
 				)
 			commit += 1
 
