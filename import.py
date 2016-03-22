@@ -33,7 +33,7 @@ def tzoffset():
 
 def tzoffsetorzero():
 	r = tzoffset()
-	if r == None:
+	if r is None:
 		return '+0000'
 	return r
 
@@ -308,7 +308,7 @@ class BlobWriter:
 				# If this is the root element, refuse to parse it.
 				raise XMLError('XML document needs to be in MediaWiki Export Format 0.4')
 		# If there is no handler, this tag shall be ignored.
-		if self.handler == None:
+		if self.handler is None:
 			return
 		# Run the handler and return its return value (possibly a sub-handler).
 		return self.handler(name, attrs)
@@ -342,13 +342,13 @@ class BlobWriter:
 	def characters(self, content):
 		# If capturing, append content to internal text buffer.
 		if self.dom:
-			if self.text == None:
+			if self.text is None:
 				self.text = content
 			else:
 				self.text += content
 	def finishText(self):
 		# Called before something that ends a text node is added.
-		if not self.text == None:
+		if not self.text is None:
 			self.currentnode.appendChild(self.dom.createTextNode(self.text))
 			self.text = None
 	def captureStart(self, name):
@@ -419,7 +419,7 @@ class BlobWriter:
 class Committer:
 	def __init__(self, meta):
 		self.meta = meta
-		if tzoffset() == None:
+		if tzoffset() is None:
 			progress('warning: using %s as local time offset since your system refuses to tell me the right one;' \
 				'commit (but not author) times will most likely be wrong' % tzoffsetorzero())
 	def work(self):
